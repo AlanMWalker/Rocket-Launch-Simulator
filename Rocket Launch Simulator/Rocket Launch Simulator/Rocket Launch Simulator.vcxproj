@@ -121,12 +121,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="FileDump.c" />
     <ClCompile Include="Physics.c" />
     <ClCompile Include="RockSimStateController.c" />
-    <ClCompile Include="RockSim.c" />
+    <ClCompile Include="RocketSim.c" />
     <ClCompile Include="UI.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="FileDump.h" />
     <ClInclude Include="Physics.h" />
     <ClInclude Include="RockSimStateController.h" />
     <ClInclude Include="UI.h" />
