@@ -30,12 +30,13 @@ void setup_rock_sim()
 
 	setup_planet_constants(&g_simData.launch_planet);
 
-	result = load_launch_vehicle_data_from_file("rocket_a.dat", &g_simData.launch_vehicle);
+	//result = load_launch_vehicle_data_from_file("rocket_a.dat", &g_simData.launch_vehicle);
+	result = load_rocket_data(&g_simData.launch_vehicle);
 	if (!result)
 	{
 		return;
 	}
-
+	
 	setup_launch_vehicle_constants(&g_simData.launch_vehicle, &g_simData.launch_planet);
 	bIsSafeToRun = true;
 }

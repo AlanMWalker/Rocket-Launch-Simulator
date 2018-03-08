@@ -133,6 +133,7 @@
   <ItemGroup>
     <ClInclude Include="cJSON.h" />
     <ClInclude Include="cJSON_Utils.h" />
+    <ClInclude Include="Macros.h" />
     <ClInclude Include="FileDump.h" />
     <ClInclude Include="FileLoader.h" />
     <ClInclude Include="Physics.h" />
