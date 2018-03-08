@@ -8,61 +8,6 @@
 #include "Physics.h"
 #include "UI.h"
 
-bool load_planet_data_from_file(char * filePath, PlanetData * pPlanetData)
-{
-	FILE* pFile = NULL;
-
-	if (pPlanetData == NULL)
-	{
-		return false;
-	}
-
-	const errno_t result = fopen_s(&pFile, filePath, "r");
-
-	if (result != 0)
-	{
-		printf("Unable to open file for planet data! Error code: %d\n", result);
-	}
-
-	memset(pPlanetData, 0, sizeof(PlanetData));
-
-	fscanf_s(pFile, "%lf", &pPlanetData->mass);
-	fscanf_s(pFile, "%lf", &pPlanetData->radius);
-	fscanf_s(pFile, "%lf", &pPlanetData->distanceToSpace);
-
-	fclose(pFile);
-
-	setup_planet_constants(pPlanetData);
-	return true;
-}
-
-bool load_launch_vehicle_data_from_file(char * filePath, LaunchVehicleData * pLaunchVehicleData)
-{
-	FILE* pFile = NULL;
-
-	if (pLaunchVehicleData == NULL)
-	{
-		return false;
-	}
-
-	const errno_t fopenResult = fopen_s(&pFile, filePath, "r");
-
-	if (fopenResult != 0)
-	{
-		printf("Unable to open file for launch vehicle data! Error code: %d\n", fopenResult);
-		return false;
-	}
-
-	memset(pLaunchVehicleData, 0, sizeof(LaunchVehicleData));
-
-	fscanf_s(pFile, "%lf", &pLaunchVehicleData->payloadMass);
-	fscanf_s(pFile, "%lf", &pLaunchVehicleData->exhaustVelocity);
-	fscanf_s(pFile, "%lf", &pLaunchVehicleData->massEjectionRate);
-
-	fclose(pFile);
-	return true;
-}
-
 void setup_planet_constants(PlanetData * pPlanetData)
 {
 	pPlanetData->escapeVelocity = sqrt(2 * BIG_G* pPlanetData->mass / pPlanetData->radius);
@@ -139,15 +84,8 @@ void step_simulation(RocketSimmData* pSimData)
 	pLaunchSim->velocity += (acceleration * pSimData->deltaTime);
 	pLaunchSim->distanceFromLaunchpad += (pLaunchSim->velocity * pSimData->deltaTime);
 
-	//printf("Velocity : %lf\n", pLaunchSim->velocity);
-	//printf("Relative Velocity : %lf\n", relativeVelocity);
-	//printf("Force: %lf\n", force);
-	//printf("Prop Mass: %lf\n", pLaunchSim->currentPropMass);
-
 	if (pLaunchSim->currentPropMass < 0.0f)
 	{
 		pSimData->bLaunchSimComplete = true;
 	}
-
-	//printf("Distance : %lf\n", pLaunchSim->distanceFromLaunchpad);
 }

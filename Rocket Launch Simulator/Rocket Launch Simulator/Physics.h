@@ -43,8 +43,6 @@ typedef struct RSD
 } RocketSimmData;
 
 
-bool load_planet_data_from_file(char * filePath, PlanetData * pPlanetData);
-
 bool load_launch_vehicle_data_from_file(char * filePath, LaunchVehicleData * pLaunchVehicleData);
 
 void setup_planet_constants(PlanetData* pPlanetData);

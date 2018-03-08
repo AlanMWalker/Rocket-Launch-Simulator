@@ -1,0 +1,7 @@
+{
+  "rocket": {
+    "payload_mass": 25.0,
+    "exhaust_velocity": 5000.0,
+    "mass_flow_rate": 5.0
+  }
+}

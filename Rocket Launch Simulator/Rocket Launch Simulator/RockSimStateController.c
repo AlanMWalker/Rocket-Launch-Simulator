@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "FileLoader.h"
 
 static bool bIsSimActive = true;
 static bool bIsSafeToRun = false;
@@ -21,18 +22,20 @@ static void run_current_state();
 
 void setup_rock_sim()
 {
-	bool result = load_planet_data_from_file("planet_test.dat", &g_simData.launch_planet);
+	bool result = load_planet_data(&g_simData.launch_planet);
 	if (!result)
 	{
 		return;
 	}
 
-	result = load_launch_vehicle_data_from_file("rocket_a.dat", &g_simData.launch_vehicle);
+	setup_planet_constants(&g_simData.launch_planet);
+
+	result = load_rocket_data(&g_simData.launch_vehicle);
 	if (!result)
 	{
 		return;
 	}
-
+	
 	setup_launch_vehicle_constants(&g_simData.launch_vehicle, &g_simData.launch_planet);
 	bIsSafeToRun = true;
 }
@@ -96,8 +99,9 @@ void run_rock_sim()
 
 		const int SleepTime = (int)(SIM_STEP * 1000) - ms;
 		if (SleepTime > 0)
+		{
 			Sleep(SleepTime);
-
+		}
 	}
 }
 
@@ -148,7 +152,7 @@ void run_current_state()
 		return;
 	}
 	break;
-	
+
 	case LaunchSim_State:
 	{
 		if (!g_simData.bLaunchSimComplete)

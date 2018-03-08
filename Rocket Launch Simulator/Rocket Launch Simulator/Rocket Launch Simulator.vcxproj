@@ -69,7 +69,10 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <CodeAnalysisRuleSet>C:\Program Files (x86)\Microsoft Visual Studio 14.0\Team Tools\Static Analysis Tools\Rule Sets\NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -88,6 +91,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_USE_MATH_DEFINES;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <EnablePREfast>false</EnablePREfast>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -121,24 +125,38 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="cJSON.c" />
+    <ClCompile Include="cJSON_Utils.c" />
     <ClCompile Include="FileDump.c" />
+    <ClCompile Include="FileLoader.c" />
     <ClCompile Include="Physics.c" />
     <ClCompile Include="RockSimStateController.c" />
     <ClCompile Include="RocketSim.c" />
     <ClCompile Include="UI.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="cJSON.h" />
+    <ClInclude Include="cJSON_Utils.h" />
+    <ClInclude Include="Macros.h" />
     <ClInclude Include="FileDump.h" />
+    <ClInclude Include="FileLoader.h" />
     <ClInclude Include="Physics.h" />
     <ClInclude Include="RockSimStateController.h" />
     <ClInclude Include="UI.h" />
     <ClInclude Include="Utils.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="data\planet.json" />
+    <None Include="data\rocket.json" />
     <None Include="planet_test.dat" />
     <None Include="rocket_a.dat" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties />
+    </VisualStudio>
+  </ProjectExtensions>
 </Project>
