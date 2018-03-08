@@ -8,33 +8,6 @@
 #include "Physics.h"
 #include "UI.h"
 
-bool load_launch_vehicle_data_from_file(char * filePath, LaunchVehicleData * pLaunchVehicleData)
-{
-	FILE* pFile = NULL;
-
-	if (pLaunchVehicleData == NULL)
-	{
-		return false;
-	}
-
-	const errno_t fopenResult = fopen_s(&pFile, filePath, "r");
-
-	if (fopenResult != 0)
-	{
-		printf_s("Unable to open file for launch vehicle data! Error code: %d\n", fopenResult);
-		return false;
-	}
-
-	memset(pLaunchVehicleData, 0, sizeof(LaunchVehicleData));
-
-	fscanf_s(pFile, "%lf", &pLaunchVehicleData->payloadMass);
-	fscanf_s(pFile, "%lf", &pLaunchVehicleData->exhaustVelocity);
-	fscanf_s(pFile, "%lf", &pLaunchVehicleData->massEjectionRate);
-
-	fclose(pFile);
-	return true;
-}
-
 void setup_planet_constants(PlanetData * pPlanetData)
 {
 	pPlanetData->escapeVelocity = sqrt(2 * BIG_G* pPlanetData->mass / pPlanetData->radius);

@@ -30,7 +30,6 @@ void setup_rock_sim()
 
 	setup_planet_constants(&g_simData.launch_planet);
 
-	//result = load_launch_vehicle_data_from_file("rocket_a.dat", &g_simData.launch_vehicle);
 	result = load_rocket_data(&g_simData.launch_vehicle);
 	if (!result)
 	{
@@ -100,8 +99,9 @@ void run_rock_sim()
 
 		const int SleepTime = (int)(SIM_STEP * 1000) - ms;
 		if (SleepTime > 0)
+		{
 			Sleep(SleepTime);
-
+		}
 	}
 }
 
