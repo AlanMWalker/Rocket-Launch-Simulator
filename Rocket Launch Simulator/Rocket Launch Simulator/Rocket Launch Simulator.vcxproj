@@ -121,24 +121,37 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="cJSON.c" />
+    <ClCompile Include="cJSON_Utils.c" />
     <ClCompile Include="FileDump.c" />
+    <ClCompile Include="FileLoader.c" />
     <ClCompile Include="Physics.c" />
     <ClCompile Include="RockSimStateController.c" />
     <ClCompile Include="RocketSim.c" />
     <ClCompile Include="UI.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="cJSON.h" />
+    <ClInclude Include="cJSON_Utils.h" />
     <ClInclude Include="FileDump.h" />
+    <ClInclude Include="FileLoader.h" />
     <ClInclude Include="Physics.h" />
     <ClInclude Include="RockSimStateController.h" />
     <ClInclude Include="UI.h" />
     <ClInclude Include="Utils.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="data\planet.json" />
+    <None Include="data\rocket.json" />
     <None Include="planet_test.dat" />
     <None Include="rocket_a.dat" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties />
+    </VisualStudio>
+  </ProjectExtensions>
 </Project>

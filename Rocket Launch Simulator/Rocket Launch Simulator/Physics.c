@@ -49,7 +49,7 @@ bool load_launch_vehicle_data_from_file(char * filePath, LaunchVehicleData * pLa
 
 	if (fopenResult != 0)
 	{
-		printf("Unable to open file for launch vehicle data! Error code: %d\n", fopenResult);
+		printf_s("Unable to open file for launch vehicle data! Error code: %d\n", fopenResult);
 		return false;
 	}
 
