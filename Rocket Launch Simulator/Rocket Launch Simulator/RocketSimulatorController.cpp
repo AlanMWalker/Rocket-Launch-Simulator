@@ -9,34 +9,28 @@
 
 #include "FileLoader.h"
 
-static bool bIsSimActive = true;
-static bool bIsSafeToRun = false;
-
-static SimState g_simulationMenuState;
-static RocketSimmData g_simData;
-
 #define CLEAR_SCREEN system("cls")
 
 
 
 void RocketSimulatorController::setupSimulator()
 {
-	bool result = load_planet_data(&g_simData.launch_planet);
+	bool result = load_planet_data(&m_simData.launch_planet);
 	if (!result)
 	{
 		return;
 	}
 
-	setup_planet_constants(&g_simData.launch_planet);
+	m_physics.setupPlanetConstants(&m_simData.launch_planet);
 
-	result = load_rocket_data(&g_simData.launch_vehicle);
+	result = load_rocket_data(&m_simData.launch_vehicle);
 	if (!result)
 	{
 		return;
 	}
 
-	setup_launch_vehicle_constants(&g_simData.launch_vehicle, &g_simData.launch_planet);
-	bIsSafeToRun = true;
+	m_physics.setupLaunchVehicleConstants(&m_simData.launch_vehicle, &m_simData.launch_planet);
+	m_bIsSafeToRun = true;
 }
 
 void RocketSimulatorController::runSimulator()
@@ -44,7 +38,7 @@ void RocketSimulatorController::runSimulator()
 	bool dbS = false;
 	bool dbR = false;
 
-	if (!bIsSafeToRun)
+	if (!m_bIsSafeToRun)
 	{
 		return;
 	}
@@ -53,13 +47,13 @@ void RocketSimulatorController::runSimulator()
 	setSimState(Stats_State);
 	clock_t tick = clock();
 	clock_t tock;
-	while (bIsSimActive)
+	while (m_bIsSimActive)
 	{
 		tock = tick;
 		tick = clock();
 		if (IsKeyPressed(VK_ESCAPE))
 		{
-			bIsSimActive = false;
+			m_bIsSimActive = false;
 		}
 
 		if (IsKeyPressed('S'))
@@ -94,7 +88,7 @@ void RocketSimulatorController::runSimulator()
 
 
 		const int ms = (int)(((double)(tick)-(double)(tock) / CLOCKS_PER_SEC) * 1000);
-		g_simData.deltaTime = (double)(ms) / 1000.0;
+		m_simData.deltaTime = (double)(ms) / 1000.0;
 
 		const int SleepTime = (int)(SIM_STEP * 1000) - ms;
 		if (SleepTime > 0)
@@ -116,14 +110,14 @@ void RocketSimulatorController::setSimState(SimState state)
 	default:
 	case Stats_State:
 	{
-		print_planet_stats(&g_simData.launch_planet);
-		print_rocket_stats(&g_simData.launch_vehicle);
+		print_planet_stats(&m_simData.launch_planet);
+		print_rocket_stats(&m_simData.launch_vehicle);
 	}
 	break;
 
 	case LaunchSim_State:
 	{
-		memset(&g_simData.launch_sim, 0, sizeof(LaunchSimulationData));
+		memset(&m_simData.launch_sim, 0, sizeof(LaunchSimulationData));
 		printf("-- ENGAGING LAUNCH -- \n");
 #ifdef LAUNCH_TIMER_ENGAGED
 		Sleep(1000);
@@ -138,12 +132,12 @@ void RocketSimulatorController::setSimState(SimState state)
 
 	}
 
-	g_simulationMenuState = state;
+	m_simulationMenuState = state;
 }
 
 void RocketSimulatorController::runCurrentSimState()
 {
-	switch (g_simulationMenuState)
+	switch (m_simulationMenuState)
 	{
 	default:
 	case Stats_State:
@@ -154,13 +148,13 @@ void RocketSimulatorController::runCurrentSimState()
 
 	case LaunchSim_State:
 	{
-		if (!g_simData.bLaunchSimComplete)
+		if (!m_simData.bLaunchSimComplete)
 		{
-			step_simulation(&g_simData);
+			m_physics.stepSimulation(&m_simData);
 		}
 		else
 		{
-			printf("Velocity at time %lf s - %lf m/s\n", g_simData.launch_sim.launchTimer, g_simData.launch_sim.velocity);
+			printf("Velocity at time %lf s - %lf m/s\n", m_simData.launch_sim.launchTimer, m_simData.launch_sim.velocity);
 			system("pause");
 		}
 	}

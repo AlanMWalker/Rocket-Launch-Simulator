@@ -25,7 +25,17 @@ public:
 
 private:
 
-	static void setSimState(SimState state);
-	static void runCurrentSimState();
+	void setSimState(SimState state);
+	void runCurrentSimState();
+
+	SimPhysics m_physics;
+
+
+	bool m_bIsSimActive = true;
+	bool m_bIsSafeToRun = false;
+
+	SimState m_simulationMenuState;
+	RocketSimmData m_simData;
+
 
 };

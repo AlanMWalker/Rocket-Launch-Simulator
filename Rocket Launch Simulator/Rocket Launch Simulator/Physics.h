@@ -43,10 +43,17 @@ typedef struct RSD
 } RocketSimmData;
 
 
-bool load_launch_vehicle_data_from_file(char * filePath, LaunchVehicleData * pLaunchVehicleData);
+class SimPhysics
+{
+public:
+	//bool load_launch_vehicle_data_from_file(char* filePath, LaunchVehicleData* pLaunchVehicleData);
 
-void setup_planet_constants(PlanetData* pPlanetData);
+	void setupPlanetConstants(PlanetData* pPlanetData);
 
-void setup_launch_vehicle_constants(LaunchVehicleData* pLvd, const PlanetData * pPlanetData);
+	void setupLaunchVehicleConstants(LaunchVehicleData* pLvd, const PlanetData* pPlanetData);
 
-void step_simulation(RocketSimmData* pSimData);
+	void stepSimulation(RocketSimmData* pSimData);
+
+private: 
+
+};
