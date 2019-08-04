@@ -17,10 +17,9 @@ static RocketSimmData g_simData;
 
 #define CLEAR_SCREEN system("cls")
 
-static void set_sim_state(SimState state);
-static void run_current_state();
 
-void setup_rock_sim()
+
+void RocketSimulatorController::setupSimulator()
 {
 	bool result = load_planet_data(&g_simData.launch_planet);
 	if (!result)
@@ -40,7 +39,7 @@ void setup_rock_sim()
 	bIsSafeToRun = true;
 }
 
-void run_rock_sim()
+void RocketSimulatorController::runSimulator()
 {
 	bool dbS = false;
 	bool dbR = false;
@@ -51,7 +50,7 @@ void run_rock_sim()
 	}
 
 	bool bUpdateScreen = false;
-	set_sim_state(Stats_State);
+	setSimState(Stats_State);
 	clock_t tick = clock();
 	clock_t tock;
 	while (bIsSimActive)
@@ -67,8 +66,8 @@ void run_rock_sim()
 		{
 			if (!dbS)
 			{
-				setup_rock_sim();
-				set_sim_state(Stats_State);
+				setupSimulator();
+				setSimState(Stats_State);
 				bUpdateScreen = true;
 				dbS = true;
 			}
@@ -84,14 +83,14 @@ void run_rock_sim()
 			if (!dbR)
 			{
 				dbR = true;
-				set_sim_state(LaunchSim_State);
+				setSimState(LaunchSim_State);
 			}
 		}
 		else
 		{
 			dbR = false;
 		}
-		run_current_state();
+		runCurrentSimState();
 
 
 		const int ms = (int)(((double)(tick)-(double)(tock) / CLOCKS_PER_SEC) * 1000);
@@ -105,11 +104,11 @@ void run_rock_sim()
 	}
 }
 
-void cleanup_rock_sim()
+void RocketSimulatorController::cleanupSimulator()
 {
 }
 
-void set_sim_state(SimState state)
+void RocketSimulatorController::setSimState(SimState state)
 {
 	CLEAR_SCREEN;
 	switch (state)
@@ -142,7 +141,7 @@ void set_sim_state(SimState state)
 	g_simulationMenuState = state;
 }
 
-void run_current_state()
+void RocketSimulatorController::runCurrentSimState()
 {
 	switch (g_simulationMenuState)
 	{

@@ -12,8 +12,20 @@ typedef enum MS
 	LaunchSim_State
 } SimState;
 
-void setup_rock_sim();
 
-void run_rock_sim();
+class RocketSimulatorController
+{
+public:
 
-void cleanup_rock_sim();
+	void setupSimulator();
+
+	void runSimulator();
+
+	void cleanupSimulator();
+
+private:
+
+	static void setSimState(SimState state);
+	static void runCurrentSimState();
+
+};
