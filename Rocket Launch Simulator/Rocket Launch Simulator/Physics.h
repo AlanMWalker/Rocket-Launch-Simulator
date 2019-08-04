@@ -1,7 +1,7 @@
 #pragma once
 
 #define GRAVITY_STRENGTH 1.0f 
-#define SIM_STEP 1.0/100.0
+#define SIM_STEP 1.0/5000.0
 #define BIG_G 6.67e-11
 
 #include <stdbool.h>

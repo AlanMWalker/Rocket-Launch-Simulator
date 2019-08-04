@@ -35,7 +35,7 @@ void setup_rock_sim()
 	{
 		return;
 	}
-	
+
 	setup_launch_vehicle_constants(&g_simData.launch_vehicle, &g_simData.launch_planet);
 	bIsSafeToRun = true;
 }
@@ -94,7 +94,7 @@ void run_rock_sim()
 		run_current_state();
 
 
-		const int ms = (int)(((double)(tick - tock) / CLOCKS_PER_SEC) * 1000);
+		const int ms = (int)(((double)(tick)-(double)(tock) / CLOCKS_PER_SEC) * 1000);
 		g_simData.deltaTime = (double)(ms) / 1000.0;
 
 		const int SleepTime = (int)(SIM_STEP * 1000) - ms;

@@ -8,19 +8,19 @@
 #include "Physics.h"
 #include "UI.h"
 
-void setup_planet_constants(PlanetData * pPlanetData)
+void setup_planet_constants(PlanetData* pPlanetData)
 {
-	pPlanetData->escapeVelocity = sqrt(2 * BIG_G* pPlanetData->mass / pPlanetData->radius);
-	pPlanetData->gravityAcceleration = (BIG_G * pPlanetData->mass) / (pPlanetData->radius* pPlanetData->radius);
+	pPlanetData->escapeVelocity = sqrt(2 * BIG_G * pPlanetData->mass / pPlanetData->radius);
+	pPlanetData->gravityAcceleration = (BIG_G * pPlanetData->mass) / (pPlanetData->radius * pPlanetData->radius);
 }
 
-void setup_launch_vehicle_constants(LaunchVehicleData * pLvd, const PlanetData *  pPlanetData)
+void setup_launch_vehicle_constants(LaunchVehicleData * pLvd, const PlanetData * pPlanetData)
 {
 	const double Total_Mass = pLvd->payloadMass * pow(M_E, pPlanetData->escapeVelocity / pLvd->exhaustVelocity);
 	pLvd->propellantMass = Total_Mass - pLvd->payloadMass;
 }
 
-void step_simulation(RocketSimmData* pSimData)
+void step_simulation(RocketSimmData * pSimData)
 {
 	static bool bIsFirstExecution = true;
 	const PlanetData* pPlanetData = &pSimData->launch_planet;
