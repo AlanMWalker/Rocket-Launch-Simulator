@@ -11,8 +11,6 @@
 
 #define CLEAR_SCREEN system("cls")
 
-
-
 void RocketSimulatorController::setupSimulator()
 {
 	bool result = load_planet_data(&m_simData.launch_planet);
@@ -31,6 +29,8 @@ void RocketSimulatorController::setupSimulator()
 
 	m_physics.setupLaunchVehicleConstants(&m_simData.launch_vehicle, &m_simData.launch_planet);
 	m_bIsSafeToRun = true;
+
+	m_physics.initialiseSimulationPhysicsModule(&m_simData);
 }
 
 void RocketSimulatorController::runSimulator()
@@ -150,7 +150,7 @@ void RocketSimulatorController::runCurrentSimState()
 	{
 		if (!m_simData.bLaunchSimComplete)
 		{
-			m_physics.stepSimulation(&m_simData);
+			m_physics.stepSimulation(m_simData.deltaTime);
 		}
 		else
 		{

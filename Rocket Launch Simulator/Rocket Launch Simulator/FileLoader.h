@@ -2,8 +2,8 @@
 
 #include <stdbool.h>
 
-typedef struct PD PlanetData;
-typedef struct LVD LaunchVehicleData;
+struct PlanetData;
+struct LaunchVehicleData;
 
 //returns true if loading was successful, false if otherwise
 //todo UNIT TEST

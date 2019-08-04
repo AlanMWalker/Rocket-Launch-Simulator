@@ -8,26 +8,8 @@
 #include "Physics.h"
 #include "UI.h"
 
-void  SimPhysics::setupPlanetConstants(PlanetData* pPlanetData)
+void SimPhysics::initialiseSimulationPhysicsModule(RocketSimmData* pSimData)
 {
-	pPlanetData->escapeVelocity = sqrt(2 * BIG_G * pPlanetData->mass / pPlanetData->radius);
-	pPlanetData->gravityAcceleration = (BIG_G * pPlanetData->mass) / (pPlanetData->radius * pPlanetData->radius);
-}
-
-void  SimPhysics::setupLaunchVehicleConstants(LaunchVehicleData * pLvd, const PlanetData * pPlanetData)
-{
-	const double Total_Mass = pLvd->payloadMass * pow(M_E, pPlanetData->escapeVelocity / pLvd->exhaustVelocity);
-	pLvd->propellantMass = Total_Mass - pLvd->payloadMass;
-}
-
-void SimPhysics::stepSimulation(RocketSimmData * pSimData)
-{
-	static bool bIsFirstExecution = true;
-	const PlanetData* pPlanetData = &pSimData->launch_planet;
-	const LaunchVehicleData* pLVD = &pSimData->launch_vehicle;
-	LaunchSimulationData* pLaunchSim = &pSimData->launch_sim;
-	const double combinedMass = pLVD->payloadMass + pLVD->propellantMass;
-
 	/*
 	Simulation on enter stages:
 	A) set current prop mass to the mass of the propellent the launch vehicle is loaded with
@@ -35,37 +17,51 @@ void SimPhysics::stepSimulation(RocketSimmData * pSimData)
 	C) calculate burnout velocity ->
 		burnoutVelocity = u * ln(m0/m) - gt
 	*/
-	if (bIsFirstExecution)
+	m_pPlanetData = &pSimData->launch_planet;
+	m_pLVD = &pSimData->launch_vehicle;
+	m_pLaunchSim = &pSimData->launch_sim;
+
+	const double combinedMass = m_pLVD->payloadMass + m_pLVD->propellantMass;
+
+	m_pLaunchSim->launchTimer = 0.0f;
+	m_pLaunchSim->currentPropMass = m_pLVD->propellantMass;
+	m_pLaunchSim->burnoutTime = m_pLVD->propellantMass / m_pLVD->massEjectionRate;
+	m_pLaunchSim->burnoutVelocity = (m_pLVD->exhaustVelocity * log(m_pLVD->payloadMass + m_pLVD->propellantMass / m_pLVD->payloadMass))
+		- m_pPlanetData->gravityAcceleration * m_pLaunchSim->burnoutTime;
+
+	print_initial_launch_calculations(m_pLaunchSim);
+
+	pSimData->bLaunchSimComplete = false;
+
+	if (isnan(m_pLaunchSim->burnoutTime) || isinf(m_pLaunchSim->burnoutTime) ||
+		isnan(m_pLaunchSim->burnoutVelocity) || isinf(m_pLaunchSim->burnoutVelocity))
 	{
-		pLaunchSim->launchTimer = 0.0f;
-		bIsFirstExecution = false;
-		pLaunchSim->currentPropMass = pLVD->propellantMass;
-		pLaunchSim->burnoutTime = pLVD->propellantMass / pLVD->massEjectionRate;
-		pLaunchSim->burnoutVelocity = (pLVD->exhaustVelocity * log(pLVD->payloadMass + pLVD->propellantMass / pLVD->payloadMass))
-			- pPlanetData->gravityAcceleration * pLaunchSim->burnoutTime;
-
-		print_initial_launch_calculations(pLaunchSim);
-
-		pSimData->bLaunchSimComplete = false;
-
-		if (isnan(pLaunchSim->burnoutTime) || isinf(pLaunchSim->burnoutTime) ||
-			isnan(pLaunchSim->burnoutVelocity) || isinf(pLaunchSim->burnoutVelocity))
-		{
-			printf("CALC ERROR\n");
-		}
-
-
-		return;
+		printf("CALC ERROR\n");
 	}
+}
 
-	pLaunchSim->launchTimer += pSimData->deltaTime;
+void SimPhysics::setupPlanetConstants(PlanetData* pPlanetData)
+{
+	pPlanetData->escapeVelocity = sqrt(2 * BIG_G * pPlanetData->mass / pPlanetData->radius);
+	pPlanetData->gravityAcceleration = (BIG_G * pPlanetData->mass) / (pPlanetData->radius * pPlanetData->radius);
+}
+
+void SimPhysics::setupLaunchVehicleConstants(LaunchVehicleData * pLvd, const PlanetData * pPlanetData)
+{
+	const double Total_Mass = pLvd->payloadMass * pow(M_E, pPlanetData->escapeVelocity / pLvd->exhaustVelocity);
+	pLvd->propellantMass = Total_Mass - pLvd->payloadMass;
+}
+
+void SimPhysics::stepSimulation(double deltaTime)
+{
+	m_pLaunchSim->launchTimer += deltaTime;
 
 	/*
 	Simulation step stages:
 	A) calcuate the acceleration due to the thrust of the rocket engines
 	B)
 	*/
-	double acceleration;
+	double acceleration = 0.0;
 
 	//a = (u/m)*dm/dt-g
 	//a = acceleration (m/s^2)
@@ -73,19 +69,19 @@ void SimPhysics::stepSimulation(RocketSimmData * pSimData)
 	//dm/dt = fuel burn rate
 	//g = acceleration due to gravity of the planet you're on
 
-	const double relativeVelocity = -pLVD->exhaustVelocity;
+	const double relativeVelocity = -m_pLVD->exhaustVelocity;
 
-	double force = -relativeVelocity * (pLVD->massEjectionRate);
+	const double force = -relativeVelocity * (m_pLVD->massEjectionRate);
 
-	acceleration = force * 1.0 / (pLaunchSim->currentPropMass + pLVD->payloadMass);
+	acceleration = force * 1.0 / (m_pLaunchSim->currentPropMass + m_pLVD->payloadMass);
 
-	pLaunchSim->currentPropMass -= pLVD->massEjectionRate * pSimData->deltaTime;
+	m_pLaunchSim->currentPropMass -= m_pLVD->massEjectionRate * deltaTime;
 
-	pLaunchSim->velocity += (acceleration * pSimData->deltaTime);
-	pLaunchSim->distanceFromLaunchpad += (pLaunchSim->velocity * pSimData->deltaTime);
+	m_pLaunchSim->velocity += (acceleration * deltaTime);
+	m_pLaunchSim->distanceFromLaunchpad += (m_pLaunchSim->velocity * deltaTime);
 
-	if (pLaunchSim->currentPropMass < 0.0f)
+	if (m_pLaunchSim->currentPropMass < 0.0f)
 	{
-		pSimData->bLaunchSimComplete = true;
+		deltaTime = true;
 	}
 }
