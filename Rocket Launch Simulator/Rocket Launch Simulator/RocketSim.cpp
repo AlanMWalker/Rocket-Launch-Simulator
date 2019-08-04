@@ -1,6 +1,6 @@
 #include <stdlib.h>
 
-#include "RockSimStateController.h"
+#include "RocketSimulatorController.h"
 #include "UI.h"
 
 #include "FileLoader.h"
