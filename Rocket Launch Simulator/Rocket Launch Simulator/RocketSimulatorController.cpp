@@ -7,28 +7,29 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "FileLoader.h"
-
 #define CLEAR_SCREEN system("cls")
 
 void RocketSimulatorController::setupSimulator()
 {
-	bool result = load_planet_data(&m_simData.launch_planet);
+	bool result = m_fileManager.loadPlanetData();
 	if (!result)
 	{
 		return;
 	}
 
-	m_physics.setupPlanetConstants(&m_simData.launch_planet);
+	m_physics.setupPlanetConstants(&m_fileManager.getPlanetData());
 
-	result = load_rocket_data(&m_simData.launch_vehicle);
+	result = m_fileManager.loadLaunchVehicleData();
 	if (!result)
 	{
 		return;
 	}
 
-	m_physics.setupLaunchVehicleConstants(&m_simData.launch_vehicle, &m_simData.launch_planet);
+	m_physics.setupLaunchVehicleConstants(&m_fileManager.getLaunchVehicleData(), &m_fileManager.getPlanetData());
 	m_bIsSafeToRun = true;
+
+	m_simData.launch_planet = m_fileManager.getPlanetData();
+	m_simData.launch_vehicle = m_fileManager.getLaunchVehicleData();
 
 	m_physics.initialiseSimulationPhysicsModule(&m_simData);
 }
@@ -88,9 +89,9 @@ void RocketSimulatorController::runSimulator()
 
 
 		const int ms = (int)(((double)(tick)-(double)(tock) / CLOCKS_PER_SEC) * 1000);
-		m_simData.deltaTime = (double)(ms) / 1000.0;
+		m_simData.deltaTime = static_cast<double>(ms) / 1000.0;
 
-		const int SleepTime = (int)(SIM_STEP * 1000) - ms;
+		const int SleepTime = static_cast<int>(SIM_STEP * 1000) - ms;
 		if (SleepTime > 0)
 		{
 			Sleep(SleepTime);

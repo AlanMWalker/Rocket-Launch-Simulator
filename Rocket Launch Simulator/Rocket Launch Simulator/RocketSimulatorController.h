@@ -2,6 +2,7 @@
 
 #include <stdbool.h>
 #include "Physics.h"
+#include "FileLoader.h"
 
 extern bool bIsSimActive;
 //#define LAUNCH_TIMER_ENGAGED
@@ -36,6 +37,5 @@ private:
 
 	SimState m_simulationMenuState;
 	RocketSimmData m_simData;
-
-
+	FileManager m_fileManager; 
 };
