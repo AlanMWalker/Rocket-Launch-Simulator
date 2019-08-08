@@ -2,11 +2,6 @@
 
 #include <stdio.h>
 
-void PrintMenuSelection()
-{
-
-}
-
 void print_planet_stats(const PlanetData * pPlanetData)
 {
 	if (pPlanetData == NULL)

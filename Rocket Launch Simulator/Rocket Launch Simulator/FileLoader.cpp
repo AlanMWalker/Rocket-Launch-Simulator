@@ -9,22 +9,27 @@
 
 #define MAX_CHARS_PER_JSON_FILE_STR 10000
 
-bool load_planet_data(PlanetData * pPlanetData)
+FileManager::FileManager()
 {
-	cJSON* pCJsonPOD = NULL;
-	FILE* pPlanetFile = NULL;
+	memset(&m_planetData, 0, sizeof(PlanetData));
+	memset(&m_launchVehicleData, 0, sizeof(LaunchVehicleData));
+}
+
+FileManager::~FileManager()
+{
+	memset(&m_planetData, 0, sizeof(PlanetData));
+}
+
+bool FileManager::loadPlanetData()
+{
+	cJSON* pCJsonPOD = nullptr;
+	FILE* pPlanetFile = nullptr;
 	PlanetData tempData;
-	char* pJsonFileString = NULL;
+	char* pJsonFileString = nullptr;
 
-	if (pPlanetData == NULL)
-	{
-		printf("Error!: \nPlanetData data structure passed to %s is NULL!\n", __FUNCTION__);
-		return false;
-	}
+	pJsonFileString = new char[MAX_CHARS_PER_JSON_FILE_STR];//(char*)malloc(sizeof(char) * MAX_CHARS_PER_JSON_FILE_STR);
 
-	pJsonFileString = (char*)malloc(sizeof(char) * MAX_CHARS_PER_JSON_FILE_STR);
-
-	if (pJsonFileString == NULL)
+	if (pJsonFileString == nullptr)
 	{// unable to allocate memory for the json string
 		printf("Error: \nUnable to allocate memory for file!\n");
 		return false;
@@ -65,7 +70,7 @@ bool load_planet_data(PlanetData * pPlanetData)
 	pJsonFileString[closingBracerIdx + 1] = '\0';
 	pCJsonPOD = cJSON_Parse(pJsonFileString);
 
-	if (pCJsonPOD == NULL)
+	if (pCJsonPOD == nullptr)
 	{
 		printf("Error: \nUnable to parse json file.\n");
 		goto end_fail;
@@ -74,26 +79,26 @@ bool load_planet_data(PlanetData * pPlanetData)
 	cJSON* planetObj;
 	planetObj = pCJsonPOD->child;
 
-	if (planetObj == NULL)
+	if (planetObj == nullptr)
 	{
 		printf("Error: \nUnable to find planet object within planet.json!\n");
 		goto end_fail;
 	}
 
-	if (planetObj->child == NULL)
+	if (planetObj->child == nullptr)
 	{
 		printf("Error: \nNo data found within planet object in planet.json!\n");
 		goto end_fail;
 	}
 
-	if (strstr(planetObj->child->string, "mass") == NULL)
+	if (strstr(planetObj->child->string, "mass") == nullptr)
 	{
 		goto end_fail_formatting;
 	}
 
 	tempData.mass = planetObj->child->valuedouble;
 
-	if (strstr(planetObj->child->next->string, "radius") == NULL)
+	if (strstr(planetObj->child->next->string, "radius") == nullptr)
 	{
 		goto end_fail_formatting;
 	}
@@ -101,17 +106,16 @@ bool load_planet_data(PlanetData * pPlanetData)
 	tempData.radius = planetObj->child->next->valuedouble;
 	cJSON* distToSpaceObj = planetObj->child->next->next;
 
-	if (strstr(distToSpaceObj->string, "distance_to_space") == NULL)
+	if (strstr(distToSpaceObj->string, "distance_to_space") == nullptr)
 	{
 		goto end_fail_formatting;
 	}
 
 	tempData.distanceToSpace = distToSpaceObj->valuedouble;
 
-	memcpy_s(pPlanetData, sizeof(PlanetData), &tempData, sizeof(PlanetData));
-
+	m_planetData = tempData;
 	goto end_success;
-
+	
 end_fail_formatting:
 	printf("Error: \nIncorrect formatting of data within planet.json!\nExpecting: mass->radius->distance_to_space\n");
 
@@ -119,38 +123,25 @@ end_fail:
 	system("pause");
 
 	fclose(pPlanetFile);
-	SAFE_FREE(pJsonFileString);
+	SAFE_FREE_ARRAY(pJsonFileString);
 	cJSON_Delete(pCJsonPOD);
 	return false;
 
 end_success:
 	fclose(pPlanetFile);
-	SAFE_FREE(pJsonFileString);
+	SAFE_FREE_ARRAY(pJsonFileString);
 	cJSON_Delete(pCJsonPOD);
 	return true;
 }
 
-bool load_rocket_data(LaunchVehicleData * pLVD)
+bool FileManager::loadLaunchVehicleData()
 {
-	FILE* pLaunchVehicleFile = NULL;
-	cJSON* pLaunchVehicleJSON = NULL;
-	char* pJsonString = NULL;
+	FILE* pLaunchVehicleFile = nullptr;
+	cJSON* pLaunchVehicleJSON = nullptr;
+	char* pJsonString = nullptr;
 	LaunchVehicleData tempData;
 
-	if (pLVD == NULL)
-	{
-		printf("Error: \nLaunch vehicle data passed to %s is NULL!\n", __FUNCTION__);
-		goto end_fail;
-	}
-
-	pJsonString = (char*)malloc(sizeof(char) * MAX_CHARS_PER_JSON_FILE_STR);
-
-	if (pJsonString == NULL)
-	{
-		printf("Error: \nUnable to allocate memory for json string!\n");
-		goto end_fail;
-	}
-
+	pJsonString = new char[MAX_CHARS_PER_JSON_FILE_STR];//(char*)malloc(sizeof(char) * MAX_CHARS_PER_JSON_FILE_STR);
 
 	const errno_t FILE_OPEN_RESULT = fopen_s(&pLaunchVehicleFile, "data/rocket.json", "r");
 
@@ -187,19 +178,19 @@ bool load_rocket_data(LaunchVehicleData * pLVD)
 	pJsonString[closingBracerIdx + 1] = '\0';
 	pLaunchVehicleJSON = cJSON_Parse(pJsonString);
 
-	if (pLaunchVehicleJSON == NULL)
+	if (pLaunchVehicleJSON == nullptr)
 	{
 		printf("Error: \nUnable to parse json file.\n");
 		goto end_fail;
 	}
 
-	if (pLaunchVehicleJSON->child == NULL)
+	if (pLaunchVehicleJSON->child == nullptr)
 	{
 		printf("Error: \nUnable to find rocket object in rocket.json file!\n");
 		goto end_fail;
 	}
 
-	if (strstr(pLaunchVehicleJSON->child->string, "rocket") == NULL)
+	if (strstr(pLaunchVehicleJSON->child->string, "rocket") == nullptr)
 	{
 		printf("Error: \nUnable to find rocket object in rocket.json file!\n");
 		goto end_fail;
@@ -207,35 +198,34 @@ bool load_rocket_data(LaunchVehicleData * pLVD)
 
 	cJSON* pRocketObj = pLaunchVehicleJSON->child;
 
-	if (pRocketObj->child == NULL)
+	if (pRocketObj->child == nullptr)
 	{
 		printf("Error: \nUnable to find data for rocket object in rocket.json file!\n");
 		goto end_fail;
 	}
 
-	if (strstr(pRocketObj->child->string, "payload_mass") == NULL)
+	if (strstr(pRocketObj->child->string, "payload_mass") == nullptr)
 	{
 		goto end_fail_formatting;
 	}
 
 	tempData.payloadMass = pRocketObj->child->valuedouble;
 
-	if (strstr(pRocketObj->child->next->string, "exhaust_velocity") == NULL)
+	if (strstr(pRocketObj->child->next->string, "exhaust_velocity") == nullptr)
 	{
 		goto end_fail_formatting;
 	}
 
 	tempData.exhaustVelocity = pRocketObj->child->next->valuedouble;
 
-	if (strstr(pRocketObj->child->next->next->string, "mass_flow_rate") == NULL)
+	if (strstr(pRocketObj->child->next->next->string, "mass_flow_rate") == nullptr)
 	{
 		goto end_fail_formatting;
 	}
 
 	tempData.massEjectionRate = pRocketObj->child->next->next->valuedouble;
 
-	memcpy_s(pLVD, sizeof(LaunchSimulationData), &tempData, sizeof(LaunchSimulationData));
-
+	m_launchVehicleData = tempData;
 
 	goto end_success;
 
@@ -246,13 +236,13 @@ end_fail:
 	system("pause");
 
 	fclose(pLaunchVehicleFile);
-	SAFE_FREE(pJsonString);
+	SAFE_FREE_ARRAY(pJsonString);
 	cJSON_Delete(pLaunchVehicleJSON);
 	return false;
 
 end_success:
 	fclose(pLaunchVehicleFile);
-	SAFE_FREE(pJsonString);
+	SAFE_FREE_ARRAY(pJsonString);
 	cJSON_Delete(pLaunchVehicleJSON);
 	return true;
 }

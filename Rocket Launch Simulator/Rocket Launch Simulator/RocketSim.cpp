@@ -1,6 +1,6 @@
 #include <stdlib.h>
 
-#include "RockSimStateController.h"
+#include "RocketSimulatorController.h"
 #include "UI.h"
 
 #include "FileLoader.h"
@@ -19,9 +19,11 @@ int main(int argc, char** argv)
 #ifdef _DEBUG
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
-	setup_rock_sim();
-	run_rock_sim();
-	cleanup_rock_sim();
+	RocketSimulatorController AppController; 
+
+	AppController.setupSimulator();
+	AppController.runSimulator();
+	AppController.cleanupSimulator();
 
 	system("pause");
 #ifdef _DEBUG

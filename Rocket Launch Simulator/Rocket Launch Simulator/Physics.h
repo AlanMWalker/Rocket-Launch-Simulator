@@ -1,29 +1,30 @@
 #pragma once
 
 #define GRAVITY_STRENGTH 1.0f 
-#define SIM_STEP 1.0/100.0
+#define SIM_STEP 1.0/5000.0
 #define BIG_G 6.67e-11
 
 #include <stdbool.h>
+#include "Macros.h"
 
-typedef struct PD
+struct PlanetData
 {
 	double mass; //kg 
 	double radius; // m 
 	double distanceToSpace; //m
 	double escapeVelocity; //m/s 
 	double gravityAcceleration; // m/s^2
-} PlanetData;
+};
 
-typedef struct LVD
+struct LaunchVehicleData
 {
 	double payloadMass; //kg
 	double exhaustVelocity; // m/s 
 	double propellantMass; // kg
 	double massEjectionRate; // kg/s
-} LaunchVehicleData;
+};
 
-typedef struct LSD
+struct LaunchSimulationData
 {
 	double velocity; //m/s
 	double distanceFromLaunchpad; //m
@@ -31,22 +32,35 @@ typedef struct LSD
 	double burnoutTime; //s
 	double burnoutVelocity; //m/s
 	double launchTimer;
-} LaunchSimulationData;
+};
 
-typedef struct RSD
+struct RocketSimmData
 {
 	PlanetData launch_planet;
 	LaunchVehicleData launch_vehicle;
 	LaunchSimulationData launch_sim;
 	double deltaTime;
 	bool bLaunchSimComplete;
-} RocketSimmData;
+};
 
 
-bool load_launch_vehicle_data_from_file(char * filePath, LaunchVehicleData * pLaunchVehicleData);
+class SimPhysics
+{
+public:
+	//bool load_launch_vehicle_data_from_file(char* filePath, LaunchVehicleData* pLaunchVehicleData);
 
-void setup_planet_constants(PlanetData* pPlanetData);
+	void initialiseSimulationPhysicsModule(RocketSimmData* pSimData);
 
-void setup_launch_vehicle_constants(LaunchVehicleData* pLvd, const PlanetData * pPlanetData);
+	void setupPlanetConstants(PlanetData* pPlanetData);
 
-void step_simulation(RocketSimmData* pSimData);
+	void setupLaunchVehicleConstants(LaunchVehicleData* pLvd, const PlanetData* pPlanetData);
+
+	void stepSimulation(double deltaTime);
+
+private:
+
+	PlanetData* m_pPlanetData;
+	LaunchVehicleData* m_pLVD;
+
+	LaunchSimulationData* m_pLaunchSim;
+};
