@@ -135,6 +135,7 @@
     <ClCompile Include="UI.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="catch.hpp" />
     <ClInclude Include="cJSON.h" />
     <ClInclude Include="cJSON_Utils.h" />
     <ClInclude Include="Macros.h" />
